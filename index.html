@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduLingua | Language Learning</title>
+  <link rel="stylesheet" href="styles/style.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <div id="loadingScreen" class="loading-overlay hidden">
+      <div class="loading-card">
+        <div class="loading-brand">EduLingua</div>
+        <h3 id="loadingHeadline">Preparing your language journey...</h3>
+        <p id="loadingSubtext">One moment while we load your experience.</p>
+        <div class="loading-animation">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">EL</div>
+        <div>
+          <p class="eyebrow">EduLingua</p>
+          <h1 class="brand-title">Learn languages with confidence</h1>
+        </div>
+      </div>
+      <button id="profileButton" class="icon-button secondary hidden">Profile</button>
+    </header>
+
+    <main class="screen-container">
+      <section id="landingScreen" class="screen active">
+        <div class="hero-card">
+          <div class="hero-copy">
+            <p class="eyebrow">Your language adventure starts here</p>
+            <h2>EduLingua makes learning fun, daily, and effective.</h2>
+            <p class="hero-text">
+              Build confidence with micro-lessons, streaks, and a playful progress path. Start with a quick onboarding quiz and choose your first course.
+            </p>
+            <div class="hero-actions">
+              <button id="getStartedButton" class="primary-button">Get Started</button>
+              <button id="loginButton" class="secondary-button">Login</button>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="ui-card small-card">Language paths</div>
+            <div class="ui-card large-card">Daily goals</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="authScreen" class="screen">
+        <div class="form-card">
+          <div class="form-header">
+            <p class="eyebrow">Welcome to EduLingua</p>
+            <h2 id="authHeading">Sign up or login</h2>
+            <p id="authMessage">New users complete a short quiz to personalize the learning path.</p>
+          </div>
+
+          <form id="authForm" class="auth-form">
+            <label>
+              Name
+              <input type="text" id="nameInput" placeholder="Enter your name" />
+            </label>
+            <label>
+              Email
+              <input type="email" id="emailInput" placeholder="you@example.com" />
+            </label>
+            <label>
+              Password
+              <input type="password" id="passwordInput" placeholder="Create a password" />
+            </label>
+            <label id="termsWrapper" class="checkbox-label">
+              <input type="checkbox" id="termsCheckbox" />
+              <span>I agree to the <a href="#" class="link">Terms and Conditions</a>.</span>
+            </label>
+            <div class="form-actions">
+              <button type="submit" id="authSubmitButton" class="primary-button">Sign up</button>
+              <button type="button" id="loginButtonAuth" class="secondary-button">Login</button>
+            </div>
+            <div class="form-actions">
+              <button type="button" id="guestAccessButton" class="tertiary-button">Continue as a Guest</button>
+              <button type="button" id="backToLandingButton" class="secondary-button">Back</button>
+            </div>
+            <p id="authErrorMessage" class="form-error hidden"></p>
+            <p id="authNote" class="form-note">New users will answer 7 onboarding questions before entering the app.</p>
+          </form>
+        </div>
+      </section>
+
+      <section id="questionsScreen" class="screen">
+        <div class="question-shell">
+          <div class="question-header">
+            <p class="eyebrow">Onboarding quiz</p>
+            <h2>Tell us about your goals</h2>
+            <p>These 7 quick questions help personalize your first course.</p>
+          </div>
+          <div id="questionContainer" class="question-card">
+            <!-- Questions are injected by JavaScript -->
+          </div>
+          <div class="question-footer">
+            <button id="questionNextButton" class="primary-button">Next</button>
+            <button id="skipQuestionsButton" class="secondary-button">Skip</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="homeScreen" class="screen">
+        <div class="home-header">
+          <div>
+            <p class="eyebrow">Home</p>
+            <h2>Choose your next lesson</h2>
+          </div>
+          <div class="pill-status">
+            <span id="streakPill" class="pill">0-day streak</span>
+            <span id="pathPill" class="pill secondary">Beginner path</span>
+          </div>
+        </div>
+
+        <div class="status-cards">
+          <article class="status-card">
+            <h3 id="streakValue">0-day streak</h3>
+            <p>Finish a lesson to grow your streak.</p>
+          </article>
+          <article class="status-card">
+            <h3 id="xpValue">0 XP</h3>
+            <p>Earn XP for each lesson you complete.</p>
+          </article>
+          <article class="status-card reminder-card">
+            <h3>Daily streak reminder</h3>
+            <p id="reminderMessage">Start your first lesson today to begin your streak.</p>
+          </article>
+          <article class="status-card daily-challenge-card">
+            <h3 id="dailyChallengeTitle">Daily challenge</h3>
+            <p id="dailyChallengeDescription">Complete any lesson today to finish the challenge and earn bonus XP.</p>
+            <button id="dailyChallengeButton" class="secondary-button">View challenge</button>
+          </article>
+          <article class="status-card wide-card">
+            <h3 id="badgeSummary">No badges earned yet</h3>
+            <p>Unlock achievements as you progress through lessons.</p>
+          </article>
+        </div>
+
+        <div id="courseGrid" class="course-grid"></div>
+      </section>
+
+      <section id="lessonScreen" class="screen">
+        <div class="lesson-shell">
+          <div class="lesson-header">
+            <p class="eyebrow">Lesson preview</p>
+            <h2 id="lessonTitle">Spanish Basics 1</h2>
+            <p id="lessonSubtitle">Friendly onboarding lesson with bite-size practice.</p>
+          </div>
+          <div class="lesson-progress">
+            <span id="lessonStepCounter" class="pill">Step 1 of 5</span>
+            <div class="progress-bar"><div class="progress-fill" style="width: 24%"></div></div>
+          </div>
+          <div id="lessonContent" class="lesson-body"></div>
+          <div class="lesson-actions">
+            <button id="backToHomeButton" class="secondary-button">Back to home</button>
+            <button id="lessonNextButton" class="primary-button">Continue lesson</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="profileScreen" class="screen">
+        <div class="profile-shell">
+          <div class="profile-header">
+            <div>
+              <p class="eyebrow">Profile</p>
+              <h2 id="profileName">EduLingua learner</h2>
+              <p id="profileEmail" class="form-note">Not signed in</p>
+            </div>
+            <div class="profile-header-actions">
+              <button id="logoutButton" class="secondary-button">Log Out</button>
+              <button id="profileCloseButton" class="secondary-button">Close</button>
+            </div>
+          </div>
+          <div class="profile-grid">
+            <div class="profile-card">
+              <h3>Streak</h3>
+              <p id="profileStreak">0 days yet — get started and earn your first streak.</p>
+            </div>
+            <div class="profile-card">
+              <h3>Experience</h3>
+              <p id="profileXp">Beginner level: 0 XP</p>
+            </div>
+            <div class="profile-card">
+              <h3>Completed lessons</h3>
+              <p id="profileCompleted">No lessons completed yet.</p>
+            </div>
+            <div class="profile-card wide-card profile-badge-shelf">
+              <h3>Badge shelf</h3>
+              <p class="badge-shelf-note">Track your earned achievements and unlock new rewards.</p>
+              <div id="profileBadges" class="badge-list">
+                <p>No badges earned yet.</p>
+              </div>
+            </div>
+          </div>
+          <p id="profileSyncMessage" class="form-note hidden"></p>
+        </div>
+      </section>
+    </main>
+
+    <div id="lessonCompleteModal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <h2 id="modalTitle">Lesson complete!</h2>
+        <p id="modalMessage">Great work. You earned XP and grew your streak.</p>
+        <div class="modal-details">
+          <span class="pill">+60 XP</span>
+          <span class="pill secondary">Streak +1</span>
+        </div>
+        <button id="modalCloseButton" class="primary-button">Return home</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA6pzt7qM-6e1gjw_n8qNL9Ngflh4QaBlM",
+      authDomain: "appdev-edulingua-project.firebaseapp.com",
+      projectId: "appdev-edulingua-project",
+      storageBucket: "appdev-edulingua-project.firebasestorage.app",
+      messagingSenderId: "181650308606",
+      appId: "1:181650308606:web:f744dd0f98b769015114af"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    const firebaseAuth = getAuth(firebaseApp);
+    const firebaseDb = getFirestore(firebaseApp);
+
+    window.firebaseApp = firebaseApp;
+    window.firebaseAuth = firebaseAuth;
+    window.firebaseDb = firebaseDb;
+  </script>
+  <script type="module" src="scripts/app.js"></script>
+</body>
+</html>

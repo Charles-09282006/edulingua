@@ -366,6 +366,7 @@ function wireEvents() {
           });
       } catch (error) {
         authApi?.setError?.(error.message || 'Unable to sign up.');
+        showNotification(error.message || 'Unable to sign up.', 'error');
       }
     },
     onLogin: async ({ userName, email, password }) => {
@@ -402,6 +403,7 @@ function wireEvents() {
           });
       } catch (error) {
         authApi?.setError?.(error.message || 'Unable to log in.');
+        showNotification(error.message || 'Unable to log in.', 'error');
       }
     },
     onGuestAccess: () => {
@@ -409,6 +411,7 @@ function wireEvents() {
       state.isNewUser = false;
       profileButton.classList.add('hidden');
       handleNavigation('home');
+      showNotification('Guest access enabled. Explore the lessons and get started.', 'info');
     },
   });
 

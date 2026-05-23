@@ -57,6 +57,31 @@ const logoutButton = document.getElementById('logoutButton');
 const loadingScreen = document.getElementById('loadingScreen');
 const loadingHeadline = document.getElementById('loadingHeadline');
 const loadingSubtext = document.getElementById('loadingSubtext');
+const notificationContainer = document.getElementById('notificationContainer');
+
+function showNotification(message, type = 'success') {
+  if (!notificationContainer || !message) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  notificationContainer.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.add('visible');
+  });
+
+  window.setTimeout(() => {
+    toast.classList.remove('visible');
+    toast.addEventListener(
+      'transitionend',
+      () => {
+        toast.remove();
+      },
+      { once: true }
+    );
+  }, 4200);
+}
 
 function showScreen(screenName) {
   Object.values(screens).forEach((screen) => screen.classList.remove('active'));
@@ -255,11 +280,13 @@ async function handleLessonComplete(courseId) {
 
   refreshReminder();
   updateUI();
+  showNotification('Lesson complete! You earned XP and moved your streak forward.', 'success');
   persistUserProfile()
     .then(() => setProfileSyncMessage(''))
     .catch((saveError) => {
       console.error('Profile save failed after lesson:', saveError);
       setProfileSyncMessage('Profile sync failed. Your progress is saved locally and will retry soon.');
+      showNotification('Profile sync failed after lesson completion. Changes will retry later.', 'warning');
     });
 }
 
@@ -309,6 +336,7 @@ function wireEvents() {
     state.userId = null;
     profileButton.classList.add('hidden');
     handleNavigation('landing');
+    showNotification('You have been logged out successfully.', 'info');
   }
 
   authApi = renderAuth({
@@ -328,11 +356,13 @@ function wireEvents() {
         }
         profileButton.classList.remove('hidden');
         handleNavigation('questions');
+        showNotification(`Welcome to EduLingua, ${userName || 'learner'}! Your onboarding path is ready.`, 'success');
         persistUserProfile()
           .then(() => setProfileSyncMessage(''))
           .catch((saveError) => {
             console.error('Profile save failed after signup:', saveError);
             setProfileSyncMessage('Profile sync failed. Your progress is saved locally and will retry soon.');
+            showNotification('Profile sync failed after signup. Changes will retry later.', 'warning');
           });
       } catch (error) {
         authApi?.setError?.(error.message || 'Unable to sign up.');
@@ -362,11 +392,13 @@ function wireEvents() {
         }
         profileButton.classList.remove('hidden');
         handleNavigation('home');
+        showNotification(`Welcome back, ${userName || 'learner'}!`, 'success');
         persistUserProfile()
           .then(() => setProfileSyncMessage(''))
           .catch((saveError) => {
             console.error('Profile save failed after login:', saveError);
             setProfileSyncMessage('Profile sync failed. Your progress is saved locally and will retry soon.');
+            showNotification('Profile sync failed after login. Changes will retry later.', 'warning');
           });
       } catch (error) {
         authApi?.setError?.(error.message || 'Unable to log in.');

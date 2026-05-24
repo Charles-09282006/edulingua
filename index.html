@@ -162,14 +162,29 @@
           </div>
           <div class="status-cards settings-list">
             <article class="status-card">
-              <h3>Notifications</h3>
-              <p>Receive daily practice reminders and streak alerts.</p>
-              <button id="settingsNotificationButton" class="secondary-button">Manage</button>
+              <div class="settings-row">
+                <div>
+                  <h3>Notifications</h3>
+                  <p>Receive reminders for lessons, streak updates, and study prompts.</p>
+                </div>
+                <label class="toggle-switch">
+                  <input id="settingsNotificationToggle" type="checkbox" />
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
             </article>
             <article class="status-card">
-              <h3>Privacy</h3>
-              <p>Control your profile visibility and data sharing preferences.</p>
-              <button id="settingsPrivacyButton" class="secondary-button">Manage</button>
+              <div class="settings-row">
+                <div>
+                  <h3>Privacy</h3>
+                  <p>Control whether your profile is visible to other learners or stays private.</p>
+                </div>
+                <label class="toggle-switch">
+                  <input id="settingsPrivacyToggle" type="checkbox" />
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <p id="settingsPrivacyLabel" class="form-note">Profile visibility is public.</p>
             </article>
             <article class="status-card">
               <h3>Theme</h3>

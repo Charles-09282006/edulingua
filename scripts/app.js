@@ -33,6 +33,8 @@ const state = {
   pathName: 'Beginner path',
   recommendedCourseLevels: ['beginner'],
   theme: window.localStorage.getItem('edulinguaTheme') || 'light',
+  notificationsEnabled: window.localStorage.getItem('edulinguaNotificationsEnabled') !== 'false',
+  profileVisibility: window.localStorage.getItem('edulinguaProfileVisibility') || 'public',
   userEmail: '',
   userId: null,
   lastEmail: window.localStorage.getItem('edulinguaLastEmail') || '',
@@ -459,7 +461,30 @@ function wireEvents() {
       updateUI();
       showNotification(`Switched to ${state.theme === 'dark' ? 'dark' : 'light'} mode.`, 'info');
     },
+    onUpdateSettings: (updates) => {
+      if (typeof updates.notificationsEnabled === 'boolean') {
+        state.notificationsEnabled = updates.notificationsEnabled;
+        window.localStorage.setItem('edulinguaNotificationsEnabled', String(updates.notificationsEnabled));
+        showNotification(
+          `Notifications ${updates.notificationsEnabled ? 'enabled' : 'disabled'}.`,
+          'info'
+        );
+      }
+      if (typeof updates.profileVisibility === 'string') {
+        state.profileVisibility = updates.profileVisibility;
+        window.localStorage.setItem('edulinguaProfileVisibility', updates.profileVisibility);
+        showNotification(
+          `Profile visibility set to ${updates.profileVisibility}.`,
+          'info'
+        );
+      }
+      updateUI();
+    },
     getTheme: () => state.theme,
+    getSettings: () => ({
+      notificationsEnabled: state.notificationsEnabled,
+      profileVisibility: state.profileVisibility,
+    }),
   });
 
   profileApi = renderProfile({});

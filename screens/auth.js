@@ -3,6 +3,8 @@ export function renderAuth({ onSubmit, onLogin, onGuestAccess, getIsNewUser, las
   const nameInput = document.getElementById('nameInput');
   const emailInput = document.getElementById('emailInput');
   const passwordInput = document.getElementById('passwordInput');
+  const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+  const confirmPasswordWrapper = document.getElementById('confirmPasswordWrapper');
   const loginButtonAuth = document.getElementById('loginButtonAuth');
   const guestAccessButton = document.getElementById('guestAccessButton');
   const termsCheckbox = document.getElementById('termsCheckbox');
@@ -47,6 +49,9 @@ export function renderAuth({ onSubmit, onLogin, onGuestAccess, getIsNewUser, las
     if (authSubmitButton) {
       authSubmitButton.textContent = mode === 'login' ? 'Continue' : 'Sign up';
     }
+    if (confirmPasswordWrapper) {
+      confirmPasswordWrapper.classList.toggle('hidden', mode === 'login');
+    }
     if (termsWrapper) {
       termsWrapper.classList.toggle('hidden', mode === 'login');
     }
@@ -72,8 +77,17 @@ export function renderAuth({ onSubmit, onLogin, onGuestAccess, getIsNewUser, las
     }
 
     const agreedToTerms = termsCheckbox?.checked;
+    const confirmPassword = confirmPasswordInput?.value.trim();
     if (!agreedToTerms) {
       setAuthError('You must agree to the Terms and Conditions before signing up.');
+      return;
+    }
+    if (!confirmPassword) {
+      setAuthError('Please confirm your password before signing up.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setAuthError('Passwords do not match. Please re-enter them.');
       return;
     }
     const userName = nameInput.value.trim() || 'EduLingua Learner';

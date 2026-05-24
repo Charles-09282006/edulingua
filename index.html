@@ -44,6 +44,7 @@
             <div class="hero-actions">
               <button id="getStartedButton" class="primary-button">Get Started</button>
               <button id="loginButton" class="secondary-button">Login</button>
+              <button id="settingsButton" class="tertiary-button">Settings</button>
             </div>
           </div>
           <div class="hero-visual">
@@ -150,6 +151,38 @@
         </div>
 
         <div id="courseGrid" class="course-grid"></div>
+      </section>
+
+      <section id="settingsScreen" class="screen">
+        <div class="form-card">
+          <div class="form-header">
+            <p class="eyebrow">Settings</p>
+            <h2>App preferences</h2>
+            <p>Manage notifications, privacy, and account preferences.</p>
+          </div>
+          <div class="status-cards settings-list">
+            <article class="status-card">
+              <h3>Notifications</h3>
+              <p>Receive daily practice reminders and streak alerts.</p>
+              <button id="settingsNotificationButton" class="secondary-button">Manage</button>
+            </article>
+            <article class="status-card">
+              <h3>Privacy</h3>
+              <p>Control your profile visibility and data sharing preferences.</p>
+              <button id="settingsPrivacyButton" class="secondary-button">Manage</button>
+            </article>
+            <article class="status-card">
+              <h3>Theme</h3>
+              <p id="settingsThemeLabel">Light mode is active.</p>
+              <button id="settingsThemeToggleButton" class="secondary-button">Toggle Dark Mode</button>
+            </article>
+            <article class="status-card wide-card">
+              <h3>Back to landing</h3>
+              <p>Return to the landing page and continue your learning journey.</p>
+              <button id="settingsBackButton" class="primary-button">Back</button>
+            </article>
+          </div>
+        </div>
       </section>
 
       <section id="lessonScreen" class="screen">

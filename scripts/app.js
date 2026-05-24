@@ -4,6 +4,7 @@ import { renderQuestions } from '../screens/questions.js';
 import { renderHome } from '../screens/home.js';
 import { renderLesson } from '../screens/lesson.js';
 import { renderProfile } from '../screens/profile.js';
+import { renderSettings } from '../screens/settings.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
@@ -16,6 +17,7 @@ const screens = {
   questions: document.getElementById('questionsScreen'),
   home: document.getElementById('homeScreen'),
   lesson: document.getElementById('lessonScreen'),
+  settings: document.getElementById('settingsScreen'),
   profile: document.getElementById('profileScreen'),
 };
 
@@ -30,6 +32,7 @@ const state = {
   completedLessons: [],
   pathName: 'Beginner path',
   recommendedCourseLevels: ['beginner'],
+  theme: window.localStorage.getItem('edulinguaTheme') || 'light',
   userEmail: '',
   userId: null,
   lastEmail: window.localStorage.getItem('edulinguaLastEmail') || '',
@@ -44,8 +47,10 @@ const state = {
 
 let homeApi = null;
 let profileApi = null;
+let settingsApi = null;
 
 const profileButton = document.getElementById('profileButton');
+const settingsButton = document.getElementById('settingsButton');
 const backToLandingButton = document.getElementById('backToLandingButton');
 const backToHomeButton = document.getElementById('backToHomeButton');
 const getStartedButton = document.getElementById('getStartedButton');
@@ -88,11 +93,19 @@ function showScreen(screenName) {
   screens[screenName].classList.add('active');
 }
 
+function applyTheme() {
+  const root = document.documentElement;
+  root.classList.toggle('theme-dark', state.theme === 'dark');
+  root.classList.toggle('theme-light', state.theme !== 'dark');
+}
+
 function updateUI() {
+  applyTheme();
   const journeyState = getLearningPathState();
   state.pathName = journeyState.pathName;
   state.recommendedCourseLevels = journeyState.recommendedCourseLevels;
   if (homeApi) homeApi.update(state);
+  if (settingsApi) settingsApi.update(state);
   if (profileApi) profileApi.update(state);
 }
 
@@ -319,6 +332,9 @@ function wireEvents() {
     authApi?.setMode('login');
     handleNavigation('auth');
   });
+  if (settingsButton) {
+    settingsButton.addEventListener('click', () => handleNavigation('settings'));
+  }
   backToLandingButton.addEventListener('click', () => handleNavigation('landing'));
   backToHomeButton.addEventListener('click', () => handleNavigation('home'));
   profileButton.addEventListener('click', () => handleNavigation('profile'));
@@ -433,6 +449,17 @@ function wireEvents() {
       lessonApi.open(course);
       handleNavigation('lesson');
     },
+  });
+
+  settingsApi = renderSettings({
+    onBack: () => handleNavigation('landing'),
+    onToggleTheme: () => {
+      state.theme = state.theme === 'dark' ? 'light' : 'dark';
+      window.localStorage.setItem('edulinguaTheme', state.theme);
+      updateUI();
+      showNotification(`Switched to ${state.theme === 'dark' ? 'dark' : 'light'} mode.`, 'info');
+    },
+    getTheme: () => state.theme,
   });
 
   profileApi = renderProfile({});

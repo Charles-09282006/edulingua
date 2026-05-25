@@ -448,7 +448,11 @@ function wireEvents() {
   homeApi = renderHome({
     onLessonOpen: (course) => {
       state.currentCourseId = course.id;
-      lessonApi.open(course);
+      lessonApi.open(course, {
+        xp: state.xp,
+        streak: state.streak,
+        badges: state.badges,
+      });
       handleNavigation('lesson');
     },
   });

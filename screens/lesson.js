@@ -5,6 +5,9 @@ export function renderLesson({ onComplete, onCancel }) {
   const lessonTitle = document.getElementById('lessonTitle');
   const lessonSubtitle = document.getElementById('lessonSubtitle');
   const lessonContent = document.getElementById('lessonContent');
+  const lessonXpValue = document.getElementById('lessonXpValue');
+  const lessonStreakValue = document.getElementById('lessonStreakValue');
+  const lessonBadgeCount = document.getElementById('lessonBadgeCount');
   const stepCounter = document.getElementById('lessonStepCounter');
   const progressFill = document.querySelector('#lessonScreen .progress-fill');
   const nextButton = document.getElementById('lessonNextButton');
@@ -13,6 +16,7 @@ export function renderLesson({ onComplete, onCancel }) {
   let currentCourse = null;
   let currentStep = 0;
   let selectedChoiceIndex = null;
+  let lessonContext = {};
 
   function getStep() {
     return currentCourse?.lesson.steps[currentStep];
@@ -73,10 +77,18 @@ export function renderLesson({ onComplete, onCancel }) {
     lessonTitle.textContent = currentCourse.lesson.title;
     lessonSubtitle.textContent = currentCourse.lesson.subtitle;
     updateProgress();
+    updateGamificationPanel();
+
+    const rewardText = step.type === 'choice'
+      ? 'Earn 15 XP for a quick win.'
+      : step.type === 'vocab'
+      ? 'Earn 10 XP by mastering this word.'
+      : 'Earn 5 XP by completing this step.';
 
     if (step.type === 'vocab') {
       lessonContent.innerHTML = `
         <div class="lesson-card lesson-step vocab-card">
+          <div class="reward-pill">${rewardText}</div>
           <h3>${step.title}</h3>
           <p class="vocab-word">${step.word}</p>
           <p class="vocab-translation">${step.translation}</p>
@@ -86,6 +98,7 @@ export function renderLesson({ onComplete, onCancel }) {
     } else if (step.type === 'choice') {
       lessonContent.innerHTML = `
         <div class="lesson-card lesson-step">
+          <div class="reward-pill">${rewardText}</div>
           <h3>${step.title}</h3>
           <p>${step.prompt}</p>
           <div class="option-grid">
@@ -150,12 +163,25 @@ export function renderLesson({ onComplete, onCancel }) {
     setModalVisibility(true);
   }
 
+  function updateGamificationPanel() {
+    if (lessonXpValue) {
+      lessonXpValue.textContent = `${lessonContext.xp || 0} XP`;
+    }
+    if (lessonStreakValue) {
+      const streakDays = lessonContext.streak || 0;
+      lessonStreakValue.textContent = `${streakDays} day${streakDays === 1 ? '' : 's'}`;
+    }
+    if (lessonBadgeCount) {
+      lessonBadgeCount.textContent = `${(lessonContext.badges || []).length} earned`;
+    }
+  }
+
   function closeModal() {
     setModalVisibility(false);
     onComplete();
   }
 
-  async function open(courseOrId) {
+  async function open(courseOrId, context = {}) {
     const selectedCourse = typeof courseOrId === 'string'
       ? courses.find((course) => course.id === courseOrId)
       : courseOrId;

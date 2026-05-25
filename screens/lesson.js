@@ -236,12 +236,14 @@ export function renderLesson({ onComplete, onCancel }) {
     if (step.type === 'choice') {
       const optionButtons = lessonContent.querySelectorAll('.option-button');
       optionButtons.forEach((button) => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', async () => {
+          const optionText = button.textContent?.trim() || '';
           selectedChoiceIndex = Number(button.dataset.index);
           optionButtons.forEach((btn) => {
             btn.classList.toggle('active', btn === button);
           });
           renderChoiceFeedback(step);
+          await playText(optionText, button);
         });
       });
       renderChoiceFeedback(step);

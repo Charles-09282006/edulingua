@@ -30,6 +30,36 @@ export function renderLesson({ onComplete, onCancel }) {
     `;
   }
 
+  function speakText(text, button) {
+    if (!window.speechSynthesis || !text) return;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = currentCourse?.language === 'Spanish'
+      ? 'es-ES'
+      : currentCourse?.language === 'French'
+      ? 'fr-FR'
+      : currentCourse?.language === 'Japanese'
+      ? 'ja-JP'
+      : 'en-US';
+
+    utterance.onend = () => {
+      if (button) {
+        button.disabled = false;
+        button.classList.remove('loading');
+      }
+    };
+
+    utterance.onerror = () => {
+      if (button) {
+        button.disabled = false;
+        button.classList.remove('loading');
+      }
+    };
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  }
+
   async function playText(text, button) {
     if (!text) return;
     if (activeAudio) {
@@ -71,11 +101,8 @@ export function renderLesson({ onComplete, onCancel }) {
 
       await activeAudio.play();
     } catch (error) {
-      console.error('Text-to-speech failed', error);
-      if (button) {
-        button.disabled = false;
-        button.classList.remove('loading');
-      }
+      console.error('Text-to-speech failed, falling back to browser TTS', error);
+      speakText(text, button);
     }
   }
 

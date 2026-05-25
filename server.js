@@ -89,7 +89,34 @@ app.post('/api/lesson-content', async (req, res) => {
     return res.status(500).json({ error: 'Failed to generate lesson content.' });
   }
 });
+app.post('/api/tts', async (req, res) => {
+  if (!openaiKey) {
+    return res.status(500).json({ error: 'OpenAI API key is not configured on the server.' });
+  }
 
+  const { text, voice = 'alloy', format = 'mp3' } = req.body;
+  if (!text) {
+    return res.status(400).json({ error: 'Missing required text field.' });
+  }
+
+  try {
+    const response = await openai.audio.speech.create({
+      model: 'gpt-4o-mini-tts',
+      voice,
+      input: text,
+      format,
+    });
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const contentType = format === 'wav' ? 'audio/wav' : 'audio/mpeg';
+    res.setHeader('Content-Type', contentType);
+    return res.send(buffer);
+  } catch (error) {
+    console.error('OpenAI TTS error:', error);
+    return res.status(500).json({ error: 'Failed to generate speech audio.' });
+  }
+});
 app.use(express.static(__dirname));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 

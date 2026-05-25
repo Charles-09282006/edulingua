@@ -1,5 +1,5 @@
 import { courses } from '../scripts/data/courses.js';
-import { fetchAiLessonContent } from '../scripts/api/openai.js';
+import { fetchAiLessonContent, fetchTextToSpeech } from '../scripts/api/openai.js';
 
 export function renderLesson({ onComplete, onCancel }) {
   const lessonTitle = document.getElementById('lessonTitle');
@@ -17,6 +17,78 @@ export function renderLesson({ onComplete, onCancel }) {
   let currentStep = 0;
   let selectedChoiceIndex = null;
   let lessonContext = {};
+  let activeAudio = null;
+  let activeAudioUrl = null;
+
+  function createPlayButton(text) {
+    return `
+      <button type="button" class="play-button" data-audio-text="${encodeURIComponent(
+        String(text || '')
+      )}">
+        🔊 Listen
+      </button>
+    `;
+  }
+
+  async function playText(text, button) {
+    if (!text) return;
+    if (activeAudio) {
+      activeAudio.pause();
+      if (activeAudioUrl) {
+        URL.revokeObjectURL(activeAudioUrl);
+        activeAudioUrl = null;
+      }
+      activeAudio = null;
+    }
+
+    if (button) {
+      button.disabled = true;
+      button.classList.add('loading');
+    }
+
+    try {
+      const audioBlob = await fetchTextToSpeech(text);
+      if (!audioBlob) {
+        throw new Error('No audio returned');
+      }
+
+      const audioUrl = URL.createObjectURL(audioBlob);
+      activeAudioUrl = audioUrl;
+      activeAudio = new Audio(audioUrl);
+      activeAudio.addEventListener(
+        'ended',
+        () => {
+          if (button) {
+            button.disabled = false;
+            button.classList.remove('loading');
+          }
+          URL.revokeObjectURL(audioUrl);
+          activeAudioUrl = null;
+          activeAudio = null;
+        },
+        { once: true }
+      );
+
+      await activeAudio.play();
+    } catch (error) {
+      console.error('Text-to-speech failed', error);
+      if (button) {
+        button.disabled = false;
+        button.classList.remove('loading');
+      }
+    }
+  }
+
+  function attachPlayButtonListeners() {
+    const playButtons = lessonContent.querySelectorAll('.play-button');
+    playButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const encodedText = button.getAttribute('data-audio-text') || '';
+        const text = decodeURIComponent(encodedText);
+        playText(text, button);
+      });
+    });
+  }
 
   function getStep() {
     return currentCourse?.lesson.steps[currentStep];
@@ -63,11 +135,13 @@ export function renderLesson({ onComplete, onCancel }) {
       <div class="lesson-card lesson-step review-summary">
         <h3>${step.title}</h3>
         <p>${step.text}</p>
+        ${step.text ? createPlayButton(step.text) : ''}
         <div class="review-grid">
           ${reviewCards || '<p class="feedback-text">Review the lesson content and keep practicing on your next session.</p>'}
         </div>
       </div>
     `;
+    attachPlayButtonListeners();
   }
 
   function renderStep() {
@@ -92,6 +166,7 @@ export function renderLesson({ onComplete, onCancel }) {
           <h3>${step.title}</h3>
           <p class="vocab-word">${step.word}</p>
           <p class="vocab-translation">${step.translation}</p>
+          ${createPlayButton(`${step.word}: ${step.translation}. ${step.example}`)}
           <p>${step.example}</p>
         </div>
       `;
@@ -101,6 +176,7 @@ export function renderLesson({ onComplete, onCancel }) {
           <div class="reward-pill">${rewardText}</div>
           <h3>${step.title}</h3>
           <p>${step.prompt}</p>
+          ${createPlayButton(step.prompt)}
           <div class="option-grid">
             ${step.options
               .map(
@@ -122,6 +198,7 @@ export function renderLesson({ onComplete, onCancel }) {
         <div class="lesson-card lesson-step">
           <h3>${step.title}</h3>
           <p>${step.text}</p>
+          ${step.text ? createPlayButton(step.text) : ''}
         </div>
       `;
     }
@@ -142,6 +219,8 @@ export function renderLesson({ onComplete, onCancel }) {
       });
       renderChoiceFeedback(step);
     }
+
+    attachPlayButtonListeners();
   }
 
   const completionModal = document.getElementById('lessonCompleteModal');
